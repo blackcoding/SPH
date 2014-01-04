@@ -17,7 +17,6 @@ struct Particle{
 	double pressure;
 	double k;
 	double densityRest;
-
 };
 
 #endif

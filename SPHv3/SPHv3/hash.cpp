@@ -1,5 +1,3 @@
-
-
 #define P1 73856093
 #define P2 19349663
 #define P3 83492791
@@ -80,21 +78,17 @@ public:
 		//find the surrounding boxes -> total of 27 boxes!
 		//add every particle with dist<h to neighbour list
 		//return neighbour list
-
 	}
 };
 
-void fillHashtable(HashTable table,Particle *particles,int partCount,double h)
+void fillHashtable(HashTable table, Particle *particles, int partCount, double h)
 {
 
 	table = HashTable(prime(partCount));
 
 	for (int i = 0; i < partCount; i++)
 	{
-		unsigned int pHash = hash(discretize(particles[i].x,h));
+		unsigned int pHash = hash(discretize(particles[i].x, h));
 		table.hashT[pHash].push_back(particles[i]);
-		
 	}
-	
-	
 }

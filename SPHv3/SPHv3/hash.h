@@ -6,6 +6,4 @@
 unsigned int hash(glm::ivec3 intvec);
 
 
-
-
 #endif
