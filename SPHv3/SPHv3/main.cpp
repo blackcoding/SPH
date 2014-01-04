@@ -19,20 +19,21 @@
 double totalmass =1000;
 
 //properties
-int partCount =10*10*10;
+int threshold =7.0;
+int partCount =8*8*8;
 double rho0 =1000;
 double mass = rho0*1*1*1/partCount;// totalmass / partCount;
 double h =0.2;// 1.1255 + 0.2;
 double k =3;
 double eta = 3.5;
-double sigma = 0.0728;
+double sigma = 0.728;
 double eps = 0.01;
 //global variables
 double boxSize = 6;
 
 double radius = 0.03;
 double sphereRadius =0.9;
-double threshold = 0;
+
 double timePassed = 0;
 
 //glut stuff
@@ -255,11 +256,11 @@ void idle()
 	double elapsed_time = current_time - previous_time;
 	double dt = 0;
 	
-	dt = 0.06;// elapsed_time;
+	dt = 0.03;// elapsed_time;
 	
 	//reset force and density
 	if (running)
-		updateParticles(particles, partCount, h, eta, dt, sphereRadius);
+		updateParticles(particles, partCount, h, eta, dt, sphereRadius,threshold,sigma);
 	for (int i = 0; i < partCount; i++)
 	{
 		

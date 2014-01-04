@@ -8,12 +8,28 @@
 #include<glm\glm.hpp>
 
 bool first = true;
+double poly6LaplceKernel(glm::dvec3 vec, double h)
+{
+	double rsq = glm::dot(vec, vec);
+	double hsq = h*h;
+	double result = 0;
 
+	if ((0 <= rsq) && (rsq <= hsq))
+	{
+		result = 945 * (hsq - rsq)*(hsq - rsq)*(rsq - 0.75*(hsq - rsq)) / (8 * M_PI*pow(h, 9));
+	}
+	return result;
+}
 glm::dvec3 poly6GradKernel(glm::dvec3 vec, double h)
 {
-	glm::dvec3 result = vec;
+	double r = glm::length(vec);
+	glm::dvec3 result = glm::dvec3(0, 0, 0);
 
-	result *= 945.0 / (32.0*M_PI*pow(h, 9))*(h*h - glm::length(vec)*glm::length(vec))*(h*h - glm::length(vec)*glm::length(vec));
+	if ((0 <= r) && (r <= h))
+	{
+		result = vec;
+		result *= 945.0 / (32.0*M_PI*pow(h, 9))*(h*h - glm::length(vec)*glm::length(vec))*(h*h - glm::length(vec)*glm::length(vec));
+	}
 	return result;
 }
 
@@ -111,7 +127,7 @@ void calculateAcceleration(Particle *particles, int partCount,double dt)
 	{
 		particles[i].a = particles[i].force / particles[i].density;
 		//apply gravity
-		particles[i].a += dt*glm::dvec3(0, 9.8, 0)*0.1;
+		//particles[i].a += dt*glm::dvec3(0, 9.8, 0)*0.1;
 	}
 }
 void updateVelocity(Particle *particles, int partCount, double dt)
@@ -147,20 +163,28 @@ glm::dvec3 calcNormal(Particle *particles, int partCount, double h, int i)
 	{
 		normal += particles[j].mass / particles[j].density*poly6GradKernel(particles[i].x - particles[j].x, h);
 	}
-	
+	return normal;
 
 }
-void addSurfaceTension(Particle *particles, int partCount, double h, double k)
+void addSurfaceTension(Particle *particles, int partCount, double h, double sigma,double threshold)
 {
 	for (int i = 0; i < partCount; i++)
 	{
 		calcColor(particles, partCount, i, h);;
-		glm::dvec3 normal;
-
-		particles[i].force -= glm::normalize(normal);
+		glm::dvec3 normal=calcNormal(particles, partCount, h, i);
+		//compute surface tension forces only if ||normal||>threshold
+		if (glm::length(normal)>threshold)
+		{
+			for (int j = 0; j < partCount; j++)
+			{
+				particles[i].force -= glm::normalize(normal)*sigma*particles[j].mass / particles[j].density*poly6LaplceKernel(particles[i].x - particles[j].x, h);
+			}
+		}
+		
+		
 	}
 }
-void updateParticles(Particle *particles, int partCount, double h,double eta,double dt,double radius)
+void updateParticles(Particle *particles, int partCount, double h,double eta,double dt,double radius, double threshold,double sigma)
 {
 
 
@@ -171,7 +195,7 @@ void updateParticles(Particle *particles, int partCount, double h,double eta,dou
 
 	applyPressureForce(particles, partCount, h);
 	applyViscosityForce(particles, partCount, h,eta);
-
+	addSurfaceTension(particles, partCount, h, sigma, threshold);
 	calculateAcceleration(particles, partCount, dt);
 	if (first)
 	{
