@@ -5,7 +5,8 @@
 #include<glm\glm.hpp>
 struct Particle{
 	glm::dvec3 x;
-	
+	glm::dvec3 vp;
+	glm::dvec3 vm;
 	glm::dvec3 v;
 	glm::dvec3 a;
 	glm::dvec3 force;

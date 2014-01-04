@@ -19,7 +19,7 @@
 double totalmass =1000;
 
 //properties
-int partCount =15*15*15;
+int partCount =10*10*10;
 double rho0 =1000;
 double mass = rho0*1*1*1/partCount;// totalmass / partCount;
 double h =0.2;// 1.1255 + 0.2;
@@ -147,6 +147,7 @@ void initParticles()
 		int y = (i / ppD) % ppD;
 		int x = i / (ppD * ppD);
 		particles[i].x = (glm::dvec3(x * dx / ppD, y * dy / ppD, z * dz / ppD) - glm::dvec3(dx/2,dy/2, dz/2));
+		particles[i].vm = particles[i].v;
 	}
 	//compute missing parameters:
 	//density
@@ -254,7 +255,7 @@ void idle()
 	double elapsed_time = current_time - previous_time;
 	double dt = 0;
 	
-	dt = 0.03;// elapsed_time;
+	dt = 0.06;// elapsed_time;
 	
 	//reset force and density
 	if (running)

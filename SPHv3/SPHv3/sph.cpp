@@ -7,6 +7,7 @@
 #include <iostream>
 #include<glm\glm.hpp>
 
+bool first = true;
 
 glm::dvec3 poly6GradKernel(glm::dvec3 vec, double h)
 {
@@ -117,7 +118,7 @@ void updateVelocity(Particle *particles, int partCount, double dt)
 {
 	for (int i = 0; i < partCount; i++)
 	{
-		particles[i].v += particles[i].a*dt;
+		particles[i].vp = particles[i].vm+particles[i].a*dt;
 	}
 }
 
@@ -172,14 +173,24 @@ void updateParticles(Particle *particles, int partCount, double h,double eta,dou
 	applyViscosityForce(particles, partCount, h,eta);
 
 	calculateAcceleration(particles, partCount, dt);
+	if (first)
+	{
+		for (int i = 0; i < partCount; i++)
+		{
+			particles[i].vm = particles[i].v - 0.5*dt*particles[i].a;
+		}
+		first = false;
+	}
 	updateVelocity(particles, partCount, dt);
 	
 	//printVec(particles[0].v);
 
-	//update position
+	//update position and velocity
 	for (int i = 0; i < partCount; i++)
 	{
-		particles[i].x += particles[i].v*dt;
+		particles[i].x += particles[i].vp*dt;
+		particles[i].v = (particles[i].vm + particles[i].vp) / 2.0;
+		particles[i].vm = particles[i].vp;
 	}
 	
 
