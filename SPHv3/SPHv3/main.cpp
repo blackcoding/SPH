@@ -13,7 +13,7 @@
 
 //properties
 int threshold = 7.0;
-int partCount = 10 * 10 * 10;
+int partCount = 8 * 8 * 8;
 double rho0 = 1000;
 double mass = rho0 * 1 * 1 * 1 / partCount;
 double h = 0.2;

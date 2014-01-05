@@ -8,6 +8,8 @@
 #include<glm\glm.hpp>
 
 bool first = true;
+
+//laplacian of the poly6 kernel
 double poly6LaplceKernel(glm::dvec3 vec, double h)
 {
 	double rsq = glm::dot(vec, vec);
@@ -21,6 +23,8 @@ double poly6LaplceKernel(glm::dvec3 vec, double h)
 	}
 	return result;
 }
+
+//gradient of the poly6 kernel
 glm::dvec3 poly6GradKernel(glm::dvec3 vec, double h)
 {
 	double r = glm::length(vec);
@@ -35,6 +39,8 @@ glm::dvec3 poly6GradKernel(glm::dvec3 vec, double h)
 	return result;
 }
 
+
+//poly6 kernel
 double poly6Kernel(glm::dvec3 vec, double h)
 {
 	double result = 0;
@@ -51,6 +57,7 @@ double poly6Kernel(glm::dvec3 vec, double h)
 
 }
 
+//laplacien of the viscosity kernel
 double laplaceViscKernel(glm::dvec3 vec, double h)
 {
 	double r = glm::length(vec);
@@ -64,6 +71,7 @@ double laplaceViscKernel(glm::dvec3 vec, double h)
 	return result;
 }
 
+//spiky kernel gradient 
 glm::dvec3 spikyGrad(glm::dvec3 vec, double h)
 {
 	glm::dvec3 result = glm::dvec3(0, 0, 0);
@@ -78,6 +86,9 @@ glm::dvec3 spikyGrad(glm::dvec3 vec, double h)
 	return result;
 }
 
+
+
+//recalculate density for each particle
 void calculateDensity(Particle *particles, int partCount, double h)
 {
 	for (int i = 0; i < partCount; i++)
@@ -91,7 +102,7 @@ void calculateDensity(Particle *particles, int partCount, double h)
 }
 
 
-
+//recalculate pressure for each particle
 void calculatePressure(Particle *particles, int partCount, double h)
 {
 	for (int i = 0; i < partCount; i++)
@@ -101,6 +112,7 @@ void calculatePressure(Particle *particles, int partCount, double h)
 }
 
 
+//compute and apply pressure force on each particle
 void applyPressureForce(Particle *particles, int partCount, double h)
 {
 	for (int i = 0; i < partCount; i++)
@@ -113,6 +125,7 @@ void applyPressureForce(Particle *particles, int partCount, double h)
 	}
 }
 
+//compute and apply viscosity force on each particle
 void applyViscosityForce(Particle *particles, int partCount, double h, double gamma)
 {
 	for (int i = 0; i < partCount; i++)
@@ -124,6 +137,8 @@ void applyViscosityForce(Particle *particles, int partCount, double h, double ga
 		}
 	}
 }
+
+//calculate acceleration add gravity for each particle
 void calculateAcceleration(Particle *particles, int partCount, double dt)
 {
 	for (int i = 0; i < partCount; i++)
@@ -133,6 +148,8 @@ void calculateAcceleration(Particle *particles, int partCount, double dt)
 		particles[i].a += dt*glm::dvec3(0, 9.8, 0)*0.1;
 	}
 }
+
+//updates velocities for each particle
 void updateVelocity(Particle *particles, int partCount, double dt)
 {
 	for (int i = 0; i < partCount; i++)
@@ -141,6 +158,7 @@ void updateVelocity(Particle *particles, int partCount, double dt)
 	}
 }
 
+//reset forces for each particle
 void resetForces(Particle *particles, int partCount)
 {
 	for (int i = 0; i < partCount; i++)
@@ -150,6 +168,8 @@ void resetForces(Particle *particles, int partCount)
 
 }
 
+
+//calculate color field
 void calcColor(Particle *particles, int partCount, int i, double h)
 {
 	particles[i].c = 0;
@@ -159,6 +179,8 @@ void calcColor(Particle *particles, int partCount, int i, double h)
 	}
 }
 
+
+//calc colorfield normal for each particle
 glm::dvec3 calcNormal(Particle *particles, int partCount, double h, int i)
 {
 	glm::dvec3 normal = glm::dvec3(0, 0, 0);
@@ -169,6 +191,8 @@ glm::dvec3 calcNormal(Particle *particles, int partCount, double h, int i)
 	return normal;
 
 }
+
+//applies surface tension for each particle
 void addSurfaceTension(Particle *particles, int partCount, double h, double sigma, double threshold)
 {
 	for (int i = 0; i < partCount; i++)
@@ -186,6 +210,8 @@ void addSurfaceTension(Particle *particles, int partCount, double h, double sigm
 		}
 	}
 }
+
+//calculate next position for each particle
 void updateParticles(Particle *particles, int partCount, double h, double eta, double dt, double radius, double threshold, double sigma)
 {
 	calculateDensity(particles, partCount, h);
@@ -218,11 +244,14 @@ void updateParticles(Particle *particles, int partCount, double h, double eta, d
 	}
 }
 
+//check for collision with bounding sphere
 double isColliding(glm::dvec3 x, double radius)
 {
 	return glm::dot(x, x) - radius*radius;
 }
 
+
+//get collision data
 void collisionData(glm::dvec3 &collisionPoint, double &depth, glm::dvec3 &normal, glm::dvec3 x, double radius)
 {
 	collisionPoint = glm::normalize(x)*radius;
